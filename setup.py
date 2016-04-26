@@ -10,7 +10,7 @@ if sys.version_info[0] == 2:
     install_requires.append('unicodecsv')
 
 setup(name="sqlit",
-      version="0.1.2",
+      version="0.1.3",
       author="Paul Fitzpatrick",
       author_email="paulfitz@alum.mit.edu",
       description="Run quick queries over multiple sqlite dbs",

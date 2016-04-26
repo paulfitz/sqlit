@@ -26,8 +26,10 @@ def main():
     parser = argparse.ArgumentParser(description='Run a quick query on multiple sqlite files.')
     parser.add_argument('-o', '--out', required=False,
                         help='sqlite file to save result in')
+    parser.add_argument('-s', '--script', required=False,
+                        help='File containing SQL to run')
     parser.add_argument('--sql', required=False,
-                        help='Sql to run. This can be added without the --sql if there is '
+                        help='SQL to run. This can be added without the --sql if there is '
                         'no ambiguity. '
                         'If no SELECT in query, SELECT is prepended to it. '
                         'If no FROM in query, and first sqlite db has a single table, '
@@ -41,7 +43,12 @@ def main():
 
     args = parser.parse_args()
 
-    if args.sql is None:
+    sql = None
+    if args.script:
+        with open(args.script, 'r') as script:
+            sql = script.read()
+
+    if args.sql is None and not sql:
         for f in args.files:
             if not os.path.exists(f):
                 if args.sql:
@@ -55,8 +62,7 @@ def main():
 
     output_name = namify(args.out) if args.out else "sheet"
 
-    if args.sql:
-        db.execute("drop table if exists {}".format(output_name))
+    db.execute("drop table if exists {}".format(output_name))
 
     db_names = []
     for idx, f in enumerate(args.files):
@@ -64,7 +70,7 @@ def main():
         db_names.append(name)
         db.execute('attach database ? as ?', [f, name])
 
-    sql = args.sql or "***"
+    sql = sql or "***"
 
     if "select" not in sql.lower():
         sql = "select {}".format(sql)
