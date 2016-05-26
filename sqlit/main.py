@@ -103,7 +103,7 @@ def main():
                         ons.append(on)
                     sql = "{} join {}.{} on {}".format(sql,
                                                        db_name, names[0],
-                                                       ', '.join(ons))
+                                                       ' and '.join(ons))
                     for c in columns:
                         if not c in match:
                             desired.append("{}.{}".format(db_name, c))
