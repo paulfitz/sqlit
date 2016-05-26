@@ -70,7 +70,7 @@ def main():
         db_names.append(name)
         db.execute('attach database ? as ?', [f, name])
 
-    sql = sql or "***"
+    sql = args.sql or "***"
 
     if "select" not in sql.lower():
         sql = "select {}".format(sql)
