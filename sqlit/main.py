@@ -39,6 +39,8 @@ def main():
                         'is added.')
     parser.add_argument('--verbose', action='store_true',
                         help='Show exact sql used.')
+    parser.add_argument('--left', action='store_true',
+                        help='Prefer left join.')
     parser.add_argument('files', nargs='*')
 
     args = parser.parse_args()
@@ -70,7 +72,7 @@ def main():
         db_names.append(name)
         db.execute('attach database ? as ?', [f, name])
 
-    sql = args.sql or "***"
+    sql = sql or args.sql or "***"
 
     if "select" not in sql.lower():
         sql = "select {}".format(sql)
@@ -101,9 +103,10 @@ def main():
                             prev_db_name, prev_table_name, c,
                             db_name, table_name, c)
                         ons.append(on)
-                    sql = "{} join {}.{} on {}".format(sql,
-                                                       db_name, names[0],
-                                                       ' and '.join(ons))
+                    sql = "{} {}join {}.{} on {}".format(sql,
+                                                         "left " if args.left else "",
+                                                         db_name, names[0],
+                                                         ' and '.join(ons))
                     for c in columns:
                         if not c in match:
                             desired.append("{}.{}".format(db_name, c))
